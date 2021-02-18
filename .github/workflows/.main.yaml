@@ -35,21 +35,21 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v2
-      - name: import skim
-        uses: actions/download-artifact@v2
+
+      - uses: actions/download-artifact@v2
         with:
           name: skim6.18.04
-      - name: access control
-        run: printf ${{ secrets.USER_PASS }} | base64 -d | kinit ${{ secrets.USER_NAME }}@CERN.CH
+
       - name: skim
         run: |
           chmod +x ./skim
-          ./skim root://eosuser.cern.ch//eos/user/g/gstark/AwesomeWorkshopFeb2020/GluGluToHToTauTau.root skim_ggH.root 19.6 11467.0 0.1
-      - name: export results
-        uses: actions/upload-artifact@v2
+          ./skim root://eospublic.cern.ch//eos/root-eos/HiggsTauTauReduced/GluGluToHToTauTau.root skim_ggH.root 19.6 11467.0 0.1
+
+      - uses: actions/upload-artifact@v2
         with:
           name: skim_ggH
           path: skim_ggH.root
+
   plot:
     needs: skim
     runs-on: ubuntu-latest
@@ -57,14 +57,15 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v2
-      - name: import skim result
-        uses: actions/download-artifact@v2
+
+      - uses: actions/download-artifact@v2
         with:
           name: skim_ggH
-      - name: run plotting
+
+      - name: plot
         run: python histograms.py skim_ggH.root ggH hist_ggH.root
-      - name: export plotting result
-        uses: actions/upload-artifact@v2
+
+      - uses: actions/upload-artifact@v2
         with:
           name: histograms
           path: hist_ggH.root
